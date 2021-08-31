@@ -3,11 +3,11 @@
   <title>Torebtr&#39;blog</title>
   <icon>https://www.gravatar.com/avatar/f4f4d3b79c164ad8f5622d14b77e0d11</icon>
   
-  <link href="http://example.com/atom.xml" rel="self"/>
+  <link href="https://torebtr.github.io/atom.xml" rel="self"/>
   
-  <link href="http://example.com/"/>
+  <link href="https://torebtr.github.io/"/>
   <updated>2021-08-31T06:34:37.693Z</updated>
-  <id>http://example.com/</id>
+  <id>https://torebtr.github.io/</id>
   
   <author>
     <name>Torebtr</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>heap学习(乱)</title>
-    <link href="http://example.com/2021/08/31/heap-%E4%B9%B1/"/>
-    <id>http://example.com/2021/08/31/heap-%E4%B9%B1/</id>
+    <link href="https://torebtr.github.io/2021/08/31/heap-%E4%B9%B1/"/>
+    <id>https://torebtr.github.io/2021/08/31/heap-%E4%B9%B1/</id>
     <published>2021-08-31T06:28:26.000Z</published>
     <updated>2021-08-31T06:34:37.693Z</updated>
     
@@ -34,17 +34,17 @@
     
     
     
-    <category term="heap" scheme="http://example.com/categories/heap/"/>
+    <category term="heap" scheme="https://torebtr.github.io/categories/heap/"/>
     
     
-    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    <category term="pwn" scheme="https://torebtr.github.io/tags/pwn/"/>
     
   </entry>
   
   <entry>
     <title>how2heap(持续更新)</title>
-    <link href="http://example.com/2021/08/25/how2heap/"/>
-    <id>http://example.com/2021/08/25/how2heap/</id>
+    <link href="https://torebtr.github.io/2021/08/25/how2heap/"/>
+    <id>https://torebtr.github.io/2021/08/25/how2heap/</id>
     <published>2021-08-25T01:28:44.000Z</published>
     <updated>2021-08-25T01:28:51.729Z</updated>
     
@@ -59,17 +59,17 @@
     
     
     
-    <category term="从0开始" scheme="http://example.com/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
+    <category term="从0开始" scheme="https://torebtr.github.io/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
     
     
-    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    <category term="pwn" scheme="https://torebtr.github.io/tags/pwn/"/>
     
   </entry>
   
   <entry>
     <title>cve_2001_3156</title>
-    <link href="http://example.com/2021/03/13/cve-2001-3156/"/>
-    <id>http://example.com/2021/03/13/cve-2001-3156/</id>
+    <link href="https://torebtr.github.io/2021/03/13/cve-2001-3156/"/>
+    <id>https://torebtr.github.io/2021/03/13/cve-2001-3156/</id>
     <published>2021-03-13T07:34:44.000Z</published>
     <updated>2021-08-24T08:14:30.285Z</updated>
     
@@ -84,14 +84,14 @@
     
     
     
-    <category term="-CVE" scheme="http://example.com/tags/CVE/"/>
+    <category term="-CVE" scheme="https://torebtr.github.io/tags/CVE/"/>
     
   </entry>
   
   <entry>
     <title>mark_of_practice</title>
-    <link href="http://example.com/2021/03/13/mark-of-practice/"/>
-    <id>http://example.com/2021/03/13/mark-of-practice/</id>
+    <link href="https://torebtr.github.io/2021/03/13/mark-of-practice/"/>
+    <id>https://torebtr.github.io/2021/03/13/mark-of-practice/</id>
     <published>2021-03-13T07:33:44.000Z</published>
     <updated>2021-08-24T06:26:05.841Z</updated>
     
@@ -106,17 +106,17 @@
     
     
     
-    <category term="从0开始" scheme="http://example.com/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
+    <category term="从0开始" scheme="https://torebtr.github.io/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
     
     
-    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    <category term="pwn" scheme="https://torebtr.github.io/tags/pwn/"/>
     
   </entry>
   
   <entry>
     <title>problem_blog</title>
-    <link href="http://example.com/2021/03/13/problem-blog/"/>
-    <id>http://example.com/2021/03/13/problem-blog/</id>
+    <link href="https://torebtr.github.io/2021/03/13/problem-blog/"/>
+    <id>https://torebtr.github.io/2021/03/13/problem-blog/</id>
     <published>2021-03-13T07:32:22.000Z</published>
     <updated>2021-03-13T07:58:36.728Z</updated>
     
@@ -132,17 +132,17 @@
     
     
     
-    <category term="从0开始" scheme="http://example.com/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
+    <category term="从0开始" scheme="https://torebtr.github.io/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
     
     
-    <category term="problems" scheme="http://example.com/tags/problems/"/>
+    <category term="problems" scheme="https://torebtr.github.io/tags/problems/"/>
     
   </entry>
   
   <entry>
     <title>第一次讲课</title>
-    <link href="http://example.com/2021/03/13/%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%B2%E8%AF%BE/"/>
-    <id>http://example.com/2021/03/13/%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%B2%E8%AF%BE/</id>
+    <link href="https://torebtr.github.io/2021/03/13/%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%B2%E8%AF%BE/"/>
+    <id>https://torebtr.github.io/2021/03/13/%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%B2%E8%AF%BE/</id>
     <published>2021-03-13T07:29:16.000Z</published>
     <updated>2021-08-24T08:32:12.433Z</updated>
     
@@ -156,17 +156,17 @@
     
     
     
-    <category term="从0开始" scheme="http://example.com/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
+    <category term="从0开始" scheme="https://torebtr.github.io/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
     
     
-    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    <category term="pwn" scheme="https://torebtr.github.io/tags/pwn/"/>
     
   </entry>
   
   <entry>
     <title>Hello World</title>
-    <link href="http://example.com/2021/03/13/hello-world/"/>
-    <id>http://example.com/2021/03/13/hello-world/</id>
+    <link href="https://torebtr.github.io/2021/03/13/hello-world/"/>
+    <id>https://torebtr.github.io/2021/03/13/hello-world/</id>
     <published>2021-03-13T05:53:10.160Z</published>
     <updated>2021-08-24T08:17:27.572Z</updated>
     
@@ -185,8 +185,8 @@
   
   <entry>
     <title>ROPempire</title>
-    <link href="http://example.com/2020/10/02/ROPempire/"/>
-    <id>http://example.com/2020/10/02/ROPempire/</id>
+    <link href="https://torebtr.github.io/2020/10/02/ROPempire/"/>
+    <id>https://torebtr.github.io/2020/10/02/ROPempire/</id>
     <published>2020-10-01T17:25:52.000Z</published>
     <updated>2021-08-24T08:16:43.832Z</updated>
     
@@ -203,10 +203,10 @@ p = process(&#39;./ret2win</summary>
     
     
     
-    <category term="从0开始" scheme="http://example.com/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
+    <category term="从0开始" scheme="https://torebtr.github.io/categories/%E4%BB%8E0%E5%BC%80%E5%A7%8B/"/>
     
     
-    <category term="pwn" scheme="http://example.com/tags/pwn/"/>
+    <category term="pwn" scheme="https://torebtr.github.io/tags/pwn/"/>
     
   </entry>
   
