@@ -6,7 +6,7 @@
   <link href="https://torebtr.github.io/atom.xml" rel="self"/>
   
   <link href="https://torebtr.github.io/"/>
-  <updated>2022-08-11T14:24:51.013Z</updated>
+  <updated>2022-09-11T13:24:10.999Z</updated>
   <id>https://torebtr.github.io/</id>
   
   <author>
@@ -17,11 +17,33 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>fuzzing101</title>
+    <link href="https://torebtr.github.io/2022/09/11/fuzzing101/"/>
+    <id>https://torebtr.github.io/2022/09/11/fuzzing101/</id>
+    <published>2022-09-11T12:54:33.000Z</published>
+    <updated>2022-09-11T13:24:10.999Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="对fuzzing101这个项目的简记"><a href="#对fuzzing101这个项目的简记" class="headerlink" title="对fuzzing101这个项目的简记"></a>对fuzzing101这个项目的简记</h1><h2 id="exercise3"><a href="#exercise3" class="headerlink" title="exercise3"></a>exercise3</h2><pre class="language-shell" data-language="shell"><code class="language-shell">cd $HOMEmkdir fuzzing_tcpdump &amp;&amp; cd fuzzing_tcpdump/# 下载并解压 tcpdump-4.9.2.tar.gzwget https://github.com/the-tcpdump-group/tcpdump/archive/refs/tags/tcpdump-4.9.2.tar.gztar -xzvf tcpdump-4.9.2.tar.gz# 我们还需要下载 TCPdump 需要的跨平台库 libpcap。下载并解压 libpcap-1.8.0.tar.gz：wget https://github.com/the-tcpdump-group/libpcap/archive/refs/tags/libpcap-1.8.0.tar.gztar -xzvf libpcap-1.8.0.tar.gz# 我们需要重命名libpcap-libpcap-1.8.0为libpcap-1.8.0. 否则，tcpdump 找不到libpcap.a本地路径： （实操下来好像没啥用，我最终显示的版本不是这个，有可能是因为我之前的环境残留问题）mv libpcap-libpcap-1.8.0/ libpcap-1.8.0# 构建并安装 libpcap：cd $HOME/fuzzing_tcpdump/libpcap-1.8.0/./configure --enable-shared=nomake# 现在，我们可以构建和安装 tcpdump：cd $HOME/fuzzing_tcpdump/tcpdump-tcpdump-4.9.2/./configure --prefix="$HOME/fuzzing_tcpdump/install/"makemake install# 要测试一切是否正常，只需键入：$HOME/fuzzing_tcpdump/install/sbin/tcpdump -h</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Torebtr/imag/img/image-20220911211242886.png" alt="image-20220911211242886" loading="lazy"></p><p>这个存在一些问题，就是我没用afl++重新编译之前，版本都是最新版，不知道存在啥问题</p><p>运行实例</p><pre class="language-none"><code class="language-none">$HOME/fuzzing_tcpdump/install/sbin/tcpdump -vvvvXX -ee -nn -r ./tests/geneve.pcap</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Torebtr/imag/img/image-20220911211438828.png" alt="image-20220911211438828" loading="lazy"></p><h3 id="在启用-ASan-的情况下构建"><a href="#在启用-ASan-的情况下构建" class="headerlink" title="在启用 ASan 的情况下构建"></a>在启用 ASan 的情况下构建</h3><p>现在我们将构建启用 ASAN 的 tcpdump（和 libpcap）。</p><p>首先，我们要清理所有之前编译的目标文件和可执行文件：</p><pre class="language-none"><code class="language-none">rm -r $HOME/fuzzing_tcpdump/installcd $HOME/fuzzing_tcpdump/libpcap-1.8.0/make cleancd $HOME/fuzzing_tcpdump/tcpdump-tcpdump-4.9.2/make clean</code></pre><p>现在，我们<code>AFL_USE_ASAN=1</code>在调用<code>configure</code>and之前设置<code>make</code>：</p><pre class="language-none"><code class="language-none">cd $HOME/fuzzing_tcpdump/libpcap-1.8.0/export LLVM_CONFIG="llvm-config-11"CC=afl-clang-lto ./configure --enable-shared=no --prefix="$HOME/fuzzing_tcpdump/install/"AFL_USE_ASAN=1 makecd $HOME/fuzzing_tcpdump/tcpdump-tcpdump-4.9.2/AFL_USE_ASAN=1 CC=afl-clang-lto ./configure --prefix="$HOME/fuzzing_tcpdump/install/"AFL_USE_ASAN=1 makeAFL_USE_ASAN=1 make install</code></pre><p><strong>afl-clang-lto 编译可能需要几分钟才能完成</strong></p><h3 id="fuzz"><a href="#fuzz" class="headerlink" title="fuzz"></a>fuzz</h3><p>现在，您可以使用以下命令运行模糊器：</p><pre class="language-none"><code class="language-none">afl-fuzz -m none -i $HOME/fuzzing_tcpdump/tcpdump-tcpdump-4.9.2/tests/ -o $HOME/fuzzing_tcpdump/out/ -s 123 -- $HOME/fuzzing_tcpdump/install/sbin/tcpdump -vvvvXX -ee -nn -r @@</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Torebtr/imag/img/image-20220911212338235.png" alt="image-20220911212338235" loading="lazy"></p><p>意料之外的事发生事，我这里没有crash，十分的尴尬</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;对fuzzing101这个项目的简记&quot;&gt;&lt;a href=&quot;#对fuzzing101这个项目的简记&quot; class=&quot;headerlink&quot; title=&quot;对fuzzing101这个项目的简记&quot;&gt;&lt;/a&gt;对fuzzing101这个项目的简记&lt;/h1&gt;&lt;h2 id=&quot;e</summary>
+      
+    
+    
+    
+    
+    <category term="fuzz" scheme="https://torebtr.github.io/tags/fuzz/"/>
+    
+  </entry>
+  
+  <entry>
     <title>FUZZ</title>
     <link href="https://torebtr.github.io/2022/08/11/FUZZ/"/>
     <id>https://torebtr.github.io/2022/08/11/FUZZ/</id>
     <published>2022-08-11T14:18:21.648Z</published>
-    <updated>2022-08-11T14:24:51.013Z</updated>
+    <updated>2022-08-11T14:25:03.443Z</updated>
     
     <content type="html"><![CDATA[<h1 id="FUZZ"><a href="#FUZZ" class="headerlink" title="FUZZ"></a>FUZZ</h1><p>模糊测试工具主要分为两类，分别是变异测试以及生成测试</p><h2 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h2><p>需要搜集目标相关信息（输入格式、内部结构），指定模糊测试的策略</p><p>通常依赖于插桩、符号执行以及污点分析这类程序分析技术</p><h2 id="分析技术与信息获取"><a href="#分析技术与信息获取" class="headerlink" title="分析技术与信息获取"></a>分析技术与信息获取</h2><h3 id="插桩"><a href="#插桩" class="headerlink" title="插桩"></a>插桩</h3><p>向目标代码的合适位置添加预设好的代码，获取程序的静态或者动态执行信息</p><h3 id="静态插桩"><a href="#静态插桩" class="headerlink" title="静态插桩"></a>静态插桩</h3><p>在源码或者中间代码的编译过程中进行插桩</p><p>如：通过gcc在汇编语言上插桩，或者通过LLVM在生成的中间语言上插桩</p><p>依赖源码</p><h3 id="动态插桩"><a href="#动态插桩" class="headerlink" title="动态插桩"></a>动态插桩</h3><p>利用qemu等模拟技术进行插桩，获取程序的运行时信息</p><h3 id="符号执行"><a href="#符号执行" class="headerlink" title="符号执行"></a>符号执行</h3><p>将程序行为的推理归结为逻辑领域的推理，通过构建一个表示程序执行的逻辑公式，可以同时推断一个程序在不用输入上的行为。</p><h3 id="静态符号执行"><a href="#静态符号执行" class="headerlink" title="静态符号执行"></a>静态符号执行</h3><p>通常会因为循环和递归的存在陷入路径爆炸当中，还会因为hash之类操作的存在导致约束求解失败。</p><h3 id="动态符号执行"><a href="#动态符号执行" class="headerlink" title="动态符号执行"></a>动态符号执行</h3><p>动态符号通过对程序进行实际执行和符号化执行，维护程序的实际状态和符号化状态，通过将难以求解的约束替换为实际值，缓解静态符号执行的问题，并按照深度优先的策略对于目标程序进行探索</p><h3 id="污点分析"><a href="#污点分析" class="headerlink" title="污点分析"></a>污点分析</h3><p>污点分析技术会观测程序中哪些数据受到预置污染源（如输入）的污染，目的是跟踪污染源和汇聚点（如敏感数据）之间的信息流</p><h4 id="静态污点分析"><a href="#静态污点分析" class="headerlink" title="静态污点分析"></a>静态污点分析</h4><p>获取程序控制流图、抽象语法树等信息，依据数据流以及依赖关系精选污点分析。</p><h4 id="动态污点分析"><a href="#动态污点分析" class="headerlink" title="动态污点分析"></a>动态污点分析</h4><h2 id="插桩编译"><a href="#插桩编译" class="headerlink" title="插桩编译"></a>插桩编译</h2><pre class="language-shell" data-language="shell"><code class="language-shell">afl-gcc -g -o test test.c </code></pre><p>然后创建两个文件夹fuzz_in和fuzz_out</p><p>fuzz_in文件夹内需要创建一个testcase文件，随便输入一点内容即可，比如aaa</p><h2 id="开始fuzz"><a href="#开始fuzz" class="headerlink" title="开始fuzz"></a>开始fuzz</h2><pre class="language-shell" data-language="shell"><code class="language-shell">可以直接从stdin读取输入的目标 ./afl-fuzz -i fuzz_in -o fuzz_out ./test可从文件读取输入的目标程序./afl-fuzz -i fuzz_in -o fuzz_out ./test @@</code></pre><h2 id="重点关注的信息"><a href="#重点关注的信息" class="headerlink" title="重点关注的信息"></a>重点关注的信息</h2><p>uniq crashes   崩溃的次数</p><p>last new path  最近的一次新路径，方便判断是否陷入死循环</p><h2 id="分析crash"><a href="#分析crash" class="headerlink" title="分析crash"></a>分析crash</h2><p>crasher文件夹是产生crash的样例，hangs是产生超时的样例，queue里面是每个不同执行路径的测试用例</p><pre class="language-shell" data-language="shell"><code class="language-shell">xxd [crash文件名]</code></pre><h2 id="无源码fuzz"><a href="#无源码fuzz" class="headerlink" title="无源码fuzz"></a>无源码fuzz</h2><pre class="language-shell" data-language="shell"><code class="language-shell">gcc -g -o test test.cafl-fuzz -i fuzz_in -o fuzz_out -Q ./test2</code></pre>]]></content>
     
